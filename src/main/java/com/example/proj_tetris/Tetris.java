@@ -16,29 +16,49 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+/**
+ * Hauptklasse für das Tetris-Spiel.
+ * Diese Klasse verwaltet den gesamten Spielablauf, wie z. B. das Erstellen und Bewegen der Figuren,
+ * das Entfernen kompletter Zeilen und die Anzeige von Punktestand und Linien.
+ */
 public class Tetris extends Application {
     // The variables
+    //Konstante für die Schrittweite beim Bewegen
     public static final int MOVE = 25;
+    // Größe eines Blocks in Pixeln 
     public static final int SIZE = 25;
+    //Maximale Breite des Spielfelds
     public static int XMAX = SIZE * 12;
+    //Maximale Höhe des Spielfelds
     public static int YMAX = SIZE * 24;
+    //Spielfeldraster, speichert belegte Felder
     public static int[][] MESH = new int[XMAX / SIZE][YMAX / SIZE];
+    //Hauptbereich für alle Spielgrafiken
     private static Pane group = new Pane();
+    //Aktuelle Tetris-Figur
     private static Form object;
+    //Hauptszene des Spiels
     private static Scene scene = new Scene(group, XMAX + 150, YMAX);
+    //Punktestand des Spielers
     public static int score = 0;
+    //Zähler für oberste Blockebene
     private static int top = 0;
+    //Gibt an, ob das Spiel läuft
     private static boolean game = true;
+    //Nächste zu spawnende Tetris-Figur
     private static Form nextObj = Controller.makeRect();
+    //Anzahl der gelöschten Zeilen
     private static int linesNo = 0;
 
+
+    
     public static void main(String[] args) {
         launch(args);
     }
-
+//Startpunkt der JavaFX-Anwendung
     @Override
     public void start(Stage stage) throws Exception {
+        // Setup-Code
         for (int[] a : MESH) {
             Arrays.fill(a, 0);
         }
@@ -102,6 +122,7 @@ public class Tetris extends Application {
         fall.schedule(task, 0, 300);
     }
 
+    //Setzt Tasteneingaben für eine Figur
     private void moveOnKeyPress(Form form) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -125,6 +146,7 @@ public class Tetris extends Application {
         });
     }
 
+    //Versucht, die Figur zu drehen (Rotation)
     private void MoveTurn(Form form) {
         int f = form.form;
         Rectangle a = form.a;
@@ -413,6 +435,7 @@ public class Tetris extends Application {
         }
     }
 
+    //Entfernt alle vollständigen Zeilen
     private void RemoveRows(Pane pane) {
         ArrayList<Node> rects = new ArrayList<Node>();
         ArrayList<Integer> lines = new ArrayList<Integer>();
@@ -471,27 +494,32 @@ public class Tetris extends Application {
             } while (lines.size() > 0);
     }
 
+    //Bewegt ein Rechteck eine Einheit nach unten
     private void MoveDown(Rectangle rect) {
         if (rect.getY() + MOVE < YMAX)
             rect.setY(rect.getY() + MOVE);
 
     }
 
+    //Bewegt ein Rechteck eine Einheit nach rechts
     private void MoveRight(Rectangle rect) {
         if (rect.getX() + MOVE <= XMAX - SIZE)
             rect.setX(rect.getX() + MOVE);
     }
 
+    //Bewegt ein Rechteck eine Einheit nach links
     private void MoveLeft(Rectangle rect) {
         if (rect.getX() - MOVE >= 0)
             rect.setX(rect.getX() - MOVE);
     }
 
+    //Bewegt ein Rechteck eine Einheit nach oben
     private void MoveUp(Rectangle rect) {
         if (rect.getY() - MOVE > 0)
             rect.setY(rect.getY() - MOVE);
     }
 
+    //Bewegt eine gesamte Figur nach unten oder fixiert sie
     private void MoveDown(Form form) {
         if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
                 || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
@@ -523,22 +551,27 @@ public class Tetris extends Application {
         }
     }
 
+    //Überprüft Blockierung für Rechteck a
     private boolean moveA(Form form) {
         return (MESH[(int) form.a.getX() / SIZE][((int) form.a.getY() / SIZE) + 1] == 1);
     }
 
+    // Überprüft Blockierung für Rechteck b
     private boolean moveB(Form form) {
         return (MESH[(int) form.b.getX() / SIZE][((int) form.b.getY() / SIZE) + 1] == 1);
     }
 
+    //Überprüft Blockierung für Rechteck c
     private boolean moveC(Form form) {
         return (MESH[(int) form.c.getX() / SIZE][((int) form.c.getY() / SIZE) + 1] == 1);
     }
 
+    //Überprüft Blockierung für Rechteck d
     private boolean moveD(Form form) {
         return (MESH[(int) form.d.getX() / SIZE][((int) form.d.getY() / SIZE) + 1] == 1);
     }
 
+    //Überprüft, ob eine Bewegung ohne Kollision möglich ist
     private boolean cB(Rectangle rect, int x, int y) {
         boolean xb = false;
         boolean yb = false;
